@@ -31,7 +31,8 @@ class WordelApp:
         for i in range(6):
             row_entries = []
             for j in range(5):
-                entry = Entry(main_frame, width=3)
+                # create entries that support readonly background
+                entry = Entry(main_frame, width=3, readonlybackground='white')
                 entry.grid(row=i+1, column=j, padx=1, pady=1)
                 row_entries.append(entry)
             self.entries.append(row_entries)
@@ -71,9 +72,9 @@ class WordelApp:
                     self.entries[self.current_row][i].config(background='yellow')
                 else:
                     self.entries[self.current_row][i].config(background='red')
-            # disable the completed row and move to next
+            # make the row read-only to prevent editing (preserves bg color)
             for entry in self.entries[self.current_row]:
-                entry.config(state='disabled')
+                entry.config(state='readonly')
             self.current_row += 1
             if self.current_row >= 6:
                 self.status_label.config(text=f"The word was: {self.target_word}")
