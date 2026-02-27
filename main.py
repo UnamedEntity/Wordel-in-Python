@@ -6,7 +6,8 @@ class WordelApp:
         # Initialize the main application window and set up the user interface.
         self.root = root
         self.root.title("Wordel")
-        self.root.geometry("500x600")
+        # let the window size itself to content and prevent resizing
+        self.root.resizable(False, False)
 
         # store game state
         self.current_row = current_row
@@ -30,7 +31,7 @@ class WordelApp:
             row_entries = []
             for j in range(5):
                 entry = ttk.Entry(main_frame, width=3)
-                entry.grid(row=i+1, column=j, padx=2, pady=2)
+                entry.grid(row=i+1, column=j, padx=1, pady=1)
                 row_entries.append(entry)
             self.entries.append(row_entries)
         # Status label for feedback
