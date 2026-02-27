@@ -29,17 +29,20 @@ class WordelApp:
         for i in range(6):
             row_entries = []
             for j in range(5):
-                entry = ttk.Entry(main_frame, width=30)
-                entry.grid(row=i+1, column=j, padx=20, pady=20)
+                entry = ttk.Entry(main_frame, width=3)
+                entry.grid(row=i+1, column=j, padx=2, pady=2)
                 row_entries.append(entry)
             self.entries.append(row_entries)
         # Status label for feedback
         self.status_label = ttk.Label(main_frame, text="", font=("Arial", 12))
-        self.status_label.grid(row=6, column=0, columnspan=5, pady=(10, 0))
+        self.status_label.grid(row=8, column=0, columnspan=5, pady=(10, 0))
 
         # Create a button to submit the guess.
         submit_button = ttk.Button(main_frame, text="Submit Guess", command=self.submit_guess)
         submit_button.grid(row=7, column=0, columnspan=5, pady=(20, 0))
+
+        # se focus to first cell at the start of the game
+        self.entries[0][0].focus_set()
 
     def submit_guess(self):
         # Collect the guess from entry field and test it against the target word.
@@ -81,7 +84,7 @@ class WordelApp:
 # Create the main application window and start the application.
 if __name__ == "__main__":
     root = Tk()
-    current_row = 1
+    current_row = 0  # start at the first row
     target_word = "APPLE"  
     app = WordelApp(root,current_row,target_word)
     root.mainloop()
