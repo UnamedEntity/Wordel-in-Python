@@ -35,7 +35,7 @@ class WordelApp:
             self.entries.append(row_entries)
         # Status label for feedback
         self.status_label = ttk.Label(main_frame, text="", font=("Arial", 12))
-        self.status_label.grid(row=6, column=0, columnspan=5, pady=(10, 0))
+        self.status_label.grid(row=9, column=0, columnspan=5, pady=(10, 0))
 
         # Create a button to submit the guess.
         submit_button = ttk.Button(main_frame, text="Submit Guess", command=self.submit_guess)
@@ -57,9 +57,6 @@ class WordelApp:
 
         if guess == self.target_word:
             self.status_label.config(text="Congratulations! You've guessed the word!")
-            # disable the winning row to prevent further editing
-            for entry in self.entries[self.current_row]:
-                entry.config(state='disabled')
         else:
             # Update the background color based on the guess.
             for i in range(len(self.target_word)):
@@ -76,7 +73,7 @@ class WordelApp:
             if self.current_row >= 6:
                 self.status_label.config(text=f"Game Over! The correct word was: {self.target_word}")
             else:
-                # set focus to next row's first cell
+                # set cursor to next row's first cell
                 self.entries[self.current_row][0].focus_set()
 
 
@@ -84,7 +81,7 @@ class WordelApp:
 # Create the main application window and start the application.
 if __name__ == "__main__":
     root = Tk()
-    current_row = 0
+    current_row = 1
     target_word = "APPLE"  
     app = WordelApp(root,current_row,target_word)
     root.mainloop()
