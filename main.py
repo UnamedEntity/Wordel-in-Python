@@ -44,7 +44,7 @@ class WordelApp:
         submit_button = ttk.Button(main_frame, text="Submit Guess", command=self.submit_guess)
         submit_button.grid(row=7, column=0, columnspan=5, pady=(20, 0))
 
-        # se focus to first cell at the start of the game
+        # set focus to first cell at the start of the game
         self.entries[0][0].focus_set()
 
     def submit_guess(self):
