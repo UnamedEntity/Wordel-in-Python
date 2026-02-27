@@ -2,7 +2,7 @@ from tkinter import *
 from tkinter import ttk
 # Create the main application window class with helper functions to manage the GUI.
 class WordelApp:
-    def __init__(self, root, current_row, target_word):
+    def __init__(self, root, current_row, target_word,score):
         # Initialize the main application window and set up the user interface.
         self.root = root
         self.root.title("Wordel")
@@ -12,6 +12,7 @@ class WordelApp:
         # store game state
         self.current_row = current_row
         self.target_word = target_word
+        self.score = score
 
         # build the interface
         self.setup_ui()
@@ -35,10 +36,13 @@ class WordelApp:
                 entry.grid(row=i+1, column=j, padx=1, pady=1)
                 row_entries.append(entry)
             self.entries.append(row_entries)
-            
+
         # Status label for feedback
         self.status_label = ttk.Label(main_frame, text="", font=("Arial", 12))
         self.status_label.grid(row=8, column=0, columnspan=5, pady=(10, 0))
+        #Score label 
+        self.score_label = ttk.Label(main_frame, text=score, font=("Arial", 12))
+        self.score_label.grid(row=9, column=0, columnspan=5, pady=(10, 0))
 
         # Create a button to submit the guess.
         submit_button = ttk.Button(main_frame, text="Submit Guess", command=self.submit_guess)
@@ -51,7 +55,7 @@ class WordelApp:
         # Collect the guess from entry field and test it against the target word.
         letters = [entry.get().strip() for entry in self.entries[self.current_row]]
 
-        # validate each box has exactly one character
+        # check if each box has exactly one character
         if any(len(l) != 1 for l in letters):
             self.status_label.config(text="Please type one letter in each box.")
             return
@@ -62,7 +66,10 @@ class WordelApp:
         self.status_label.config(text="")
 
         if guess == self.target_word:
+            #increase score and update status and score labels
             self.status_label.config(text="You've guessed the word!")
+            self.score += 1
+            self.score_label.config(text=f"Score: {self.score}")
         else:
             # Update the background color based on the guess.
             for i in range(len(self.target_word)):
@@ -92,7 +99,8 @@ if __name__ == "__main__":
     root = Tk()
     current_row = 0 
     target_word = "APPLE"  
-    app = WordelApp(root,current_row,target_word)
+    score = 0
+    app = WordelApp(root,current_row,target_word,score)
     root.mainloop()
 
         
