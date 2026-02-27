@@ -1,5 +1,6 @@
 from tkinter import *
 from tkinter import ttk
+# use standard Entry (not ttk) for color support
 # Create the main application window class with helper functions to manage the GUI components and interactions.
 class WordelApp:
     def __init__(self, root, current_row, target_word):
@@ -30,7 +31,7 @@ class WordelApp:
         for i in range(6):
             row_entries = []
             for j in range(5):
-                entry = ttk.Entry(main_frame, width=3)
+                entry = Entry(main_frame, width=3)
                 entry.grid(row=i+1, column=j, padx=1, pady=1)
                 row_entries.append(entry)
             self.entries.append(row_entries)
@@ -60,7 +61,7 @@ class WordelApp:
         self.status_label.config(text="")
 
         if guess == self.target_word:
-            self.status_label.config(text="Congratulations! You've guessed the word!")
+            self.status_label.config(text="You've guessed the word!")
         else:
             # Update the background color based on the guess.
             for i in range(len(self.target_word)):
@@ -75,7 +76,7 @@ class WordelApp:
                 entry.config(state='disabled')
             self.current_row += 1
             if self.current_row >= 6:
-                self.status_label.config(text=f"Game Over! The correct word was: {self.target_word}")
+                self.status_label.config(text=f"The word was: {self.target_word}")
             else:
                 # set cursor to next row's first cell
                 self.entries[self.current_row][0].focus_set()
