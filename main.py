@@ -66,12 +66,15 @@ class WordelApp:
         else:
             # Update the background color based on the guess.
             for i in range(len(self.target_word)):
+                # choose a color
                 if guess[i] == self.target_word[i]:
-                    self.entries[self.current_row][i].config(background='green')
+                    color = 'green'
                 elif guess[i] in self.target_word:
-                    self.entries[self.current_row][i].config(background='yellow')
+                    color = 'yellow'
                 else:
-                    self.entries[self.current_row][i].config(background='red')
+                    color = 'red'
+                # set both normal and readonly backgrounds so the hue isn't lost when state changes
+                self.entries[self.current_row][i].config(background=color, readonlybackground=color)
             # make the row read-only to prevent editing (preserves bg color)
             for entry in self.entries[self.current_row]:
                 entry.config(state='readonly')
