@@ -35,7 +35,7 @@ class WordelApp:
             self.entries.append(row_entries)
         # Status label for feedback
         self.status_label = ttk.Label(main_frame, text="", font=("Arial", 12))
-        self.status_label.grid(row=9, column=0, columnspan=5, pady=(10, 0))
+        self.status_label.grid(row=6, column=0, columnspan=5, pady=(10, 0))
 
         # Create a button to submit the guess.
         submit_button = ttk.Button(main_frame, text="Submit Guess", command=self.submit_guess)
