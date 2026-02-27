@@ -33,21 +33,33 @@ class WordelApp:
                 entry.grid(row=i+1, column=j, padx=20, pady=20)
                 row_entries.append(entry)
             self.entries.append(row_entries)
-        # Create a button to submit the guess. use lambda to defer execution.
+        # Status label for feedback
+        self.status_label = ttk.Label(main_frame, text="", font=("Arial", 12))
+        self.status_label.grid(row=6, column=0, columnspan=5, pady=(10, 0))
+
+        # Create a button to submit the guess.
         submit_button = ttk.Button(main_frame, text="Submit Guess", command=self.submit_guess)
         submit_button.grid(row=7, column=0, columnspan=5, pady=(20, 0))
 
     def submit_guess(self):
         # Collect the guess from entry field and test it against the target word.
-        guess = ''.join(entry.get() for entry in self.entries[self.current_row])
+        letters = [entry.get().strip() for entry in self.entries[self.current_row]]
 
-        # make sure entry length matches target length
-        if len(guess) != len(self.target_word):
-            print(f"Please enter a {len(self.target_word)}-letter word.")
+        # validate each box has exactly one character
+        if any(len(l) != 1 for l in letters):
+            self.status_label.config(text="Please type one letter in each box.")
             return
 
+        guess = ''.join(l.upper() for l in letters)
+
+        # clear 
+        self.status_label.config(text="")
+
         if guess == self.target_word:
-            print("Congratulations! You've guessed the word!")
+            self.status_label.config(text="Congratulations! You've guessed the word!")
+            # disable the winning row to prevent further editing
+            for entry in self.entries[self.current_row]:
+                entry.config(state='disabled')
         else:
             # Update the background color based on the guess.
             for i in range(len(self.target_word)):
@@ -57,10 +69,15 @@ class WordelApp:
                     self.entries[self.current_row][i].config(background='yellow')
                 else:
                     self.entries[self.current_row][i].config(background='red')
-            # Increment the current row for the next guess and check if the game is over.
+            # disable the completed row and move to next
+            for entry in self.entries[self.current_row]:
+                entry.config(state='disabled')
             self.current_row += 1
             if self.current_row >= 6:
-                print("Game Over! The correct word was:", self.target_word)
+                self.status_label.config(text=f"Game Over! The correct word was: {self.target_word}")
+            else:
+                # set focus to next row's first cell
+                self.entries[self.current_row][0].focus_set()
 
 
 
