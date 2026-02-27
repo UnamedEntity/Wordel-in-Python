@@ -1,7 +1,6 @@
 from tkinter import *
 from tkinter import ttk
-# use standard Entry (not ttk) for color support
-# Create the main application window class with helper functions to manage the GUI components and interactions.
+# Create the main application window class with helper functions to manage the GUI.
 class WordelApp:
     def __init__(self, root, current_row, target_word):
         # Initialize the main application window and set up the user interface.
@@ -36,6 +35,7 @@ class WordelApp:
                 entry.grid(row=i+1, column=j, padx=1, pady=1)
                 row_entries.append(entry)
             self.entries.append(row_entries)
+            
         # Status label for feedback
         self.status_label = ttk.Label(main_frame, text="", font=("Arial", 12))
         self.status_label.grid(row=8, column=0, columnspan=5, pady=(10, 0))
@@ -73,9 +73,9 @@ class WordelApp:
                     color = 'yellow'
                 else:
                     color = 'red'
-                # set both normal and readonly backgrounds so the hue isn't lost when state changes
+                # set both normal and readonly backgrounds 
                 self.entries[self.current_row][i].config(background=color, readonlybackground=color)
-            # make the row read-only to prevent editing (preserves bg color)
+            # make the row read-only to prevent editing 
             for entry in self.entries[self.current_row]:
                 entry.config(state='readonly')
             self.current_row += 1
@@ -90,7 +90,7 @@ class WordelApp:
 # Create the main application window and start the application.
 if __name__ == "__main__":
     root = Tk()
-    current_row = 0  # start at the first row
+    current_row = 0 
     target_word = "APPLE"  
     app = WordelApp(root,current_row,target_word)
     root.mainloop()
