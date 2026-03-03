@@ -16,7 +16,10 @@ class WordelApp:
         self.current_row = current_row
         self.score = score
 
-        # choose a word and its dictionary immediately
+        # load the master dictionary of all 5-letter words from every CSV
+        self.full_words = self.load_all_words()
+
+        # pick a target word and also keep the list for that initial letter
         self.target_word, self.words = self.generate_target_word()
 
         # build the interface
@@ -43,7 +46,8 @@ class WordelApp:
             self.entries.append(row_entries)
 
         # Status label for feedback
-        self.status_label = ttk.Label(main_frame, text=f"The word starts with {self.target_word[0]}", font=("Arial", 12))
+        # show first letter hint in uppercase for readability
+        self.status_label = ttk.Label(main_frame, text=f"The word starts with {self.target_word[0].upper()}", font=("Arial", 12))
         self.status_label.grid(row=8, column=0, columnspan=5, pady=(10, 0))
 
         #Score label 
@@ -69,7 +73,7 @@ class WordelApp:
 
         # Update the score label and clear the status label.
         self.score_label.config(text=f"Score: {self.score}")
-        self.status_label.config(text=f"The word starts with {self.target_word[0]}")
+        self.status_label.config(text=f"The word starts with {self.target_word[0].upper()}")
 
         for row in self.entries:
             # reset each entry to normal state, clear the text, and set background to white
@@ -88,14 +92,14 @@ class WordelApp:
             self.status_label.config(text="Please type one letter in each box.")
             return
         
-        # formats guess by turning array input into a string
-        guess = ''.join(l.upper() for l in letters)
+        # formats guess by turning array input into a string (lowercased for comparison)
+        guess = ''.join(l.lower() for l in letters)
 
         # clear 
         self.status_label.config(text="")
 
-        #checks if the word in the dictonary
-        if guess not in self.words:
+        # checks against full dictionary instead of only the letter-specific list
+        if guess not in self.full_words:
             self.status_label.config(text="Not a valid word. Try again.")
 
         elif guess == self.target_word:
@@ -127,33 +131,52 @@ class WordelApp:
                 self.entries[self.current_row][0].focus_set()
 
     @staticmethod
-    def generate_target_word():
-        # find a random letter in the alphabet and open the corresponding word list to select a random target word.
-        random_number = random.randint(0, 25)
-        alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-
-        # fixes the file path error by checking for the directory in two possible locations relative to the script's location. 
-        # This allows the program to work regardless of whether it's run from the project root or from within a subdirectory.
+    def _get_csv_dir():
+        """Return the directory path that contains the word list CSV files."""
         base_dir = os.path.dirname(os.path.abspath(__file__))
         candidates = [
             os.path.normpath(os.path.join(base_dir, '..', 'Word lists in csv')),
             os.path.normpath(os.path.join(base_dir, '..', 'Word-lists-in-csv', 'Word lists in csv'))
         ]
-        csv_dir = None
         for c in candidates:
             if os.path.isdir(c):
-                csv_dir = c
-                break
-        if csv_dir is None:
-            raise FileNotFoundError(f"Could not locate word list directory. Tried: {candidates}")
+                return c
+        raise FileNotFoundError(f"Could not locate word list directory. Tried: {candidates}")
 
-        csv_path = os.path.join(csv_dir, f"{alphabet[random_number]}word.csv")
+    @classmethod
+    def load_words_for_letter(cls, letter: str):
+        """Return all normalized 5-letter words from the CSV for the given initial letter."""
+        csv_dir = cls._get_csv_dir()
+        csv_path = os.path.join(csv_dir, f"{letter.upper()}word.csv")
+        words = []
+        if os.path.isfile(csv_path):
+            with open(csv_path, 'r', newline='') as f:
+                reader = csv.reader(f)
+                for row in reader:
+                    if not row:
+                        continue
+                    w = row[0].strip().lower()
+                    if len(w) == 5:
+                        words.append(w)
+        return words
 
-        with open(csv_path, 'r', newline='') as f:
-            reader = csv.reader(f)
-            words = [row[0] for row in reader]
+    @classmethod
+    def load_all_words(cls):
+        """Aggregate 5-letter words from all letter files into one list."""
+        alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+        all_words = []
+        for ch in alphabet:
+            all_words.extend(cls.load_words_for_letter(ch))
+        return all_words
 
-        # return both the randomly chosen word and the list for validation
+    @classmethod
+    def generate_target_word(cls):
+        """Choose a random target word from one randomly selected letter bucket."""
+        alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+        letter = random.choice(alphabet)
+        words = cls.load_words_for_letter(letter)
+        if not words:
+            raise ValueError(f"No valid words for letter '{letter}'")
         return random.choice(words), words
 
 
