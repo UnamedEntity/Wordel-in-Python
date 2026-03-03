@@ -1,6 +1,7 @@
 from tkinter import *
 from tkinter import ttk
 import random
+import csv
 # Create the main application window class with helper functions to manage the GUI.
 class WordelApp:
     def __init__(self, root, current_row, target_word,score):
@@ -59,7 +60,7 @@ class WordelApp:
     def reset_game(self):
         # Reset the game state and clear the interface for a new game.
         self.current_row = 0
-        self.target_word = "APPLE"  
+        self.target_word = generate_target_word()  
         self.score = 0
 
         # Update the score label and clear the status label.
@@ -117,9 +118,15 @@ class WordelApp:
                 self.entries[self.current_row][0].focus_set()
 
 def generate_target_word():
-    # Placeholder function to generate a random target word.
-    # In a complete implementation, this would select a word from a predefined list.
-    pass
+    # find a random letter in the alphabet and open the corresponding word list to select a random target word.
+    random_number = random.randint(0, 25)
+    alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+    with open(f'Word list in csv/{alphabet[random_number]}word.csv', 'r') as f:
+        reader = csv.reader(f)
+        # parse the csv into array
+        words = [row[0] for row in reader]
+    # generate a random word from the list and return it as the target word for the game.
+    return random.choice(words)
 
 # Create the main application window and start the application.
 if __name__ == "__main__":
