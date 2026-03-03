@@ -69,7 +69,7 @@ class WordelApp:
 
         # Update the score label and clear the status label.
         self.score_label.config(text=f"Score: {self.score}")
-        self.status_label.config(text="")
+        self.status_label.config(text=f"The word starts with {self.target_word[0]}")
 
         for row in self.entries:
             # reset each entry to normal state, clear the text, and set background to white
