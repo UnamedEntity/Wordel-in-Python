@@ -175,8 +175,6 @@ class WordelApp:
         alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
         letter = random.choice(alphabet)
         words = cls.load_words_for_letter(letter)
-        if not words:
-            raise ValueError(f"No valid words for letter '{letter}'")
         return random.choice(words), words
 
 
