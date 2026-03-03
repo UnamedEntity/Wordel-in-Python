@@ -6,7 +6,7 @@ import os
 
 # Create the main application window class with helper functions to manage the GUI.
 class WordelApp:
-    def __init__(self, root, current_row, target_word,score):
+    def __init__(self, root, current_row, score=0):
         # Initialize the main application window and set up the user interface.
         self.root = root
         self.root.title("Wordel")
@@ -14,8 +14,10 @@ class WordelApp:
         self.root.resizable(False, False)
         # store game state
         self.current_row = current_row
-        self.target_word = target_word
         self.score = score
+
+        # choose a word and its dictionary immediately
+        self.target_word, self.words = self.generate_target_word()
 
         # build the interface
         self.setup_ui()
@@ -41,7 +43,7 @@ class WordelApp:
             self.entries.append(row_entries)
 
         # Status label for feedback
-        self.status_label = ttk.Label(main_frame, text="", font=("Arial", 12))
+        self.status_label = ttk.Label(main_frame, text=f"The word starts with {self.target_word[0]}", font=("Arial", 12))
         self.status_label.grid(row=8, column=0, columnspan=5, pady=(10, 0))
 
         #Score label 
@@ -62,7 +64,7 @@ class WordelApp:
     def reset_game(self):
         # Reset the game state and clear the interface for a new game.
         self.current_row = 0
-        self.target_word = generate_target_word()  
+        self.target_word, self.words = self.generate_target_word()
         self.score = 0
 
         # Update the score label and clear the status label.
@@ -124,7 +126,8 @@ class WordelApp:
                 # set cursor to next row's first cell
                 self.entries[self.current_row][0].focus_set()
 
-    def generate_target_word(self):
+    @staticmethod
+    def generate_target_word():
         # find a random letter in the alphabet and open the corresponding word list to select a random target word.
         random_number = random.randint(0, 25)
         alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
@@ -137,28 +140,29 @@ class WordelApp:
             os.path.normpath(os.path.join(base_dir, '..', 'Word-lists-in-csv', 'Word lists in csv'))
         ]
         csv_dir = None
-        # caculate csv path name using the random letter and check if the directory exists in either of the candidate paths
         for c in candidates:
             if os.path.isdir(c):
                 csv_dir = c
                 break
+        if csv_dir is None:
+            raise FileNotFoundError(f"Could not locate word list directory. Tried: {candidates}")
+
         csv_path = os.path.join(csv_dir, f"{alphabet[random_number]}word.csv")
 
         with open(csv_path, 'r', newline='') as f:
             reader = csv.reader(f)
             words = [row[0] for row in reader]
-        self.words = words
-        # generate a random word from the list and return it as the target word for the game.
-        return random.choice(words)
+
+        # return both the randomly chosen word and the list for validation
+        return random.choice(words), words
 
 
 # Create the main application window and start the application.
 if __name__ == "__main__":
     root = Tk()
     current_row = 0 
-    target_word = WordelApp.generate_target_word()  
     score = 0
-    app = WordelApp(root,current_row,target_word,score)
+    app = WordelApp(root, current_row, score)
     root.mainloop()
 
         
