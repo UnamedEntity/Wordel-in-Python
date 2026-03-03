@@ -1,5 +1,6 @@
 from tkinter import *
 from tkinter import ttk
+import random
 # Create the main application window class with helper functions to manage the GUI.
 class WordelApp:
     def __init__(self, root, current_row, target_word,score):
@@ -39,15 +40,38 @@ class WordelApp:
         # Status label for feedback
         self.status_label = ttk.Label(main_frame, text="", font=("Arial", 12))
         self.status_label.grid(row=8, column=0, columnspan=5, pady=(10, 0))
+
         #Score label 
         self.score_label = ttk.Label(main_frame, text=str(self.score), font=("Arial", 12))
         self.score_label.grid(row=9, column=0, columnspan=5, pady=(5, 0))
+
+        # Reset button to start a new game
+        reset_button = ttk.Button(main_frame, text="Reset Game", command=self.reset_game)
+        reset_button.grid(row=10, column=0, columnspan=5, pady=(10, 0))
 
         # Create a button to submit the guess.
         submit_button = ttk.Button(main_frame, text="Submit Guess", command=self.submit_guess)
         submit_button.grid(row=7, column=0, columnspan=5, pady=(20, 0))
 
         # set focus to first cell at the start of the game
+        self.entries[0][0].focus_set()
+
+    def reset_game(self):
+        # Reset the game state and clear the interface for a new game.
+        self.current_row = 0
+        self.target_word = "APPLE"  
+        self.score = 0
+
+        # Update the score label and clear the status label.
+        self.score_label.config(text=f"Score: {self.score}")
+        self.status_label.config(text="")
+
+        for row in self.entries:
+            # reset each entry to normal state, clear the text, and set background to white
+            for entry in row:
+                entry.config(state='normal', background='white', readonlybackground='white')
+                entry.delete(0, END)
+        #set cursor to first cell of the first row
         self.entries[0][0].focus_set()
 
     def submit_guess(self):
@@ -92,13 +116,16 @@ class WordelApp:
                 # set cursor to next row's first cell
                 self.entries[self.current_row][0].focus_set()
 
-
+def generate_target_word():
+    # Placeholder function to generate a random target word.
+    # In a complete implementation, this would select a word from a predefined list.
+    pass
 
 # Create the main application window and start the application.
 if __name__ == "__main__":
     root = Tk()
     current_row = 0 
-    target_word = "APPLE"  
+    target_word = generate_target_word()  
     score = 0
     app = WordelApp(root,current_row,target_word,score)
     root.mainloop()
