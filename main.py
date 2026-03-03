@@ -95,7 +95,7 @@ class WordelApp:
         #checks if the word in the dictonary
         if guess not in self.words:
             self.status_label.config(text="Not a valid word. Try again.")
-            
+
         elif guess == self.target_word:
             #increase score and update status and score labels
             self.status_label.config(text="You've guessed the word!")
@@ -129,25 +129,20 @@ class WordelApp:
         random_number = random.randint(0, 25)
         alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
-        # build path to the CSV directory; this handles cases where the working directory
+        # fixes the file path error by checking for the directory in two possible locations relative to the script's location. 
+        # This allows the program to work regardless of whether it's run from the project root or from within a subdirectory.
         base_dir = os.path.dirname(os.path.abspath(__file__))
         candidates = [
             os.path.normpath(os.path.join(base_dir, '..', 'Word lists in csv')),
             os.path.normpath(os.path.join(base_dir, '..', 'Word-lists-in-csv', 'Word lists in csv'))
         ]
         csv_dir = None
+        # caculate csv path name using the random letter and check if the directory exists in either of the candidate paths
         for c in candidates:
             if os.path.isdir(c):
                 csv_dir = c
                 break
-        if csv_dir is None:
-            raise FileNotFoundError(f"Could not locate word list directory. Tried: {candidates}")
-
         csv_path = os.path.join(csv_dir, f"{alphabet[random_number]}word.csv")
-
-        if not os.path.isfile(csv_path):
-            # give a helpful message rather than crashing with FileNotFoundError
-            raise FileNotFoundError(f"Word list not found: {csv_path}")
 
         with open(csv_path, 'r', newline='') as f:
             reader = csv.reader(f)
