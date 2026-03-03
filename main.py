@@ -135,6 +135,7 @@ class WordelApp:
         #Return the directory path that contains the word list CSV files.
         base_dir = os.path.dirname(os.path.abspath(__file__))
         candidates = [
+            # check multiple possible locations for the CSV directory 
             os.path.normpath(os.path.join(base_dir, '..', 'Word lists in csv')),
             os.path.normpath(os.path.join(base_dir, '..', 'Word-lists-in-csv', 'Word lists in csv'))
         ]
