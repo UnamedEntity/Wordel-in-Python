@@ -46,7 +46,7 @@ class WordelApp:
             self.entries.append(row_entries)
 
         # Status label for feedback
-        # show first letter hint in uppercase for readability
+        # show first letter hint 
         self.status_label = ttk.Label(main_frame, text=f"The word starts with {self.target_word[0].upper()}", font=("Arial", 12))
         self.status_label.grid(row=8, column=0, columnspan=5, pady=(10, 0))
 
@@ -129,7 +129,7 @@ class WordelApp:
             else:
                 # set cursor to next row's first cell
                 self.entries[self.current_row][0].focus_set()
-
+    # dose not need class as an argument
     @staticmethod
     def _get_csv_dir():
         #Return the directory path that contains the word list CSV files.
@@ -141,8 +141,8 @@ class WordelApp:
         for c in candidates:
             if os.path.isdir(c):
                 return c
-        raise FileNotFoundError(f"Could not locate word list directory. Tried: {candidates}")
-
+    
+    # autmotically has class as an argument so i can save the list of 5 letter words inside the class to use accross all methods
     @classmethod
     def load_words_for_letter(cls, letter: str):
         #Return all normalized 5-letter words from the CSV for the given initial letter.
@@ -159,7 +159,7 @@ class WordelApp:
                     if len(w) == 5:
                         words.append(w)
         return words
-
+    # loads all the words from letters A-Z, neededs to be class method since it call load words for letter method
     @classmethod
     def load_all_words(cls):
         #Aggregate 5-letter words from all letter files into one list.
@@ -168,7 +168,7 @@ class WordelApp:
         for ch in alphabet:
             all_words.extend(cls.load_words_for_letter(ch))
         return all_words
-
+    # uses the two previous methods to get a random letter and then a random word
     @classmethod
     def generate_target_word(cls):
         #Choose a random target word from one randomly selected letter bucket.
