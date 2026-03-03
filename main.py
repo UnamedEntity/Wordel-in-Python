@@ -8,7 +8,6 @@ class WordelApp:
         self.root.title("Wordel")
         # let the window size itself to content and prevent resizing
         self.root.resizable(False, False)
-
         # store game state
         self.current_row = current_row
         self.target_word = target_word
@@ -41,8 +40,8 @@ class WordelApp:
         self.status_label = ttk.Label(main_frame, text="", font=("Arial", 12))
         self.status_label.grid(row=8, column=0, columnspan=5, pady=(10, 0))
         #Score label 
-        self.score_label = ttk.Label(main_frame, text=score, font=("Arial", 12))
-        self.score_label.grid(row=9, column=0, columnspan=5, pady=(10, 0))
+        self.score_label = ttk.Label(main_frame, text=str(self.score), font=("Arial", 12))
+        self.score_label.grid(row=9, column=0, columnspan=5, pady=(5, 0))
 
         # Create a button to submit the guess.
         submit_button = ttk.Button(main_frame, text="Submit Guess", command=self.submit_guess)
@@ -59,7 +58,8 @@ class WordelApp:
         if any(len(l) != 1 for l in letters):
             self.status_label.config(text="Please type one letter in each box.")
             return
-
+        
+        # formats guess by turning array input into a string
         guess = ''.join(l.upper() for l in letters)
 
         # clear 
