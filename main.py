@@ -132,7 +132,7 @@ class WordelApp:
 
     @staticmethod
     def _get_csv_dir():
-        """Return the directory path that contains the word list CSV files."""
+        #Return the directory path that contains the word list CSV files.
         base_dir = os.path.dirname(os.path.abspath(__file__))
         candidates = [
             os.path.normpath(os.path.join(base_dir, '..', 'Word lists in csv')),
@@ -145,7 +145,7 @@ class WordelApp:
 
     @classmethod
     def load_words_for_letter(cls, letter: str):
-        """Return all normalized 5-letter words from the CSV for the given initial letter."""
+        #Return all normalized 5-letter words from the CSV for the given initial letter.
         csv_dir = cls._get_csv_dir()
         csv_path = os.path.join(csv_dir, f"{letter.upper()}word.csv")
         words = []
@@ -162,7 +162,7 @@ class WordelApp:
 
     @classmethod
     def load_all_words(cls):
-        """Aggregate 5-letter words from all letter files into one list."""
+        #Aggregate 5-letter words from all letter files into one list.
         alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
         all_words = []
         for ch in alphabet:
@@ -171,7 +171,7 @@ class WordelApp:
 
     @classmethod
     def generate_target_word(cls):
-        """Choose a random target word from one randomly selected letter bucket."""
+        #Choose a random target word from one randomly selected letter bucket.
         alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
         letter = random.choice(alphabet)
         words = cls.load_words_for_letter(letter)
