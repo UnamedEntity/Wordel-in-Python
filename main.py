@@ -124,9 +124,11 @@ def generate_target_word():
     with open(f'Word list in csv/{alphabet[random_number]}word.csv', 'r') as f:
         reader = csv.reader(f)
         # parse the csv into array
+        global words
         words = [row[0] for row in reader]
     # generate a random word from the list and return it as the target word for the game.
     return random.choice(words)
+
 
 # Create the main application window and start the application.
 if __name__ == "__main__":
