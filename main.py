@@ -108,6 +108,7 @@ class WordelApp:
             self.score += 1
             self.score_label.config(text=f"Score: {self.score}")
             color = 'green'
+            self.reset_game()
         else:
             # Update the background color based on the guess.
             for i in range(len(self.target_word)):
