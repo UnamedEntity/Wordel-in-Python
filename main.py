@@ -151,21 +151,20 @@ class WordelApp:
     # dose not need class as an argument
     @staticmethod
     def _get_csv_dir():
-        #Return the directory path that contains the word list CSV files.
+        # Return the directory path that contains the word list CSV files.
+        # The word lists directory can sit next to this script or one level up.
         base_dir = os.path.dirname(os.path.abspath(__file__))
         candidates = [
-            # check multiple possible locations for the CSV directory 
-            os.path.normpath(os.path.join(base_dir, '..', 'Word lists in csv')),
-            os.path.normpath(os.path.join(base_dir, '..', 'Word-lists-in-csv', 'Word lists in csv'))
+            # look for a folder named exactly as it appears in the repository
+            os.path.normpath(os.path.join(base_dir, 'Word lists in csv')),
         ]
         for c in candidates:
             if os.path.isdir(c):
                 return c
     
     # autmotically has class as an argument so i can save the list of 5 letter words inside the class to use accross all methods
-    @classmethod
     def load_words_for_letter(self, letter):
-        #Return all normalized 5-letter words from the CSV for the given initial letter.
+        # Return all normalized 5-letter words from the CSV for the given initial letter.
         csv_dir = self._get_csv_dir()
         csv_path = os.path.join(csv_dir, f"{letter.upper()}word.csv")
         words = []
@@ -180,7 +179,6 @@ class WordelApp:
                         words.append(w)
         return words
     # loads all the words from letters A-Z, neededs to be class method since it call load words for letter method
-    @classmethod
     def load_all_words(self):
         #Aggregate 5-letter words from all letter files into one list.
         alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
@@ -189,7 +187,6 @@ class WordelApp:
             all_words.extend(self.load_words_for_letter(ch))
         return all_words
     # uses the two previous methods to get a random letter and then a random word
-    @classmethod
     def generate_target_word(self):
         #Choose a random target word from one randomly selected letter bucket.
         alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
