@@ -25,6 +25,14 @@ class WordelApp:
         # build the interface
         self.setup_ui()
 
+    # only let user input one letter per box and only allow letters, not numbers or symbols
+    def validate_letter(self, proposed):
+        if proposed == "":
+            return True
+        if len(proposed) > 1:
+            return False
+        return proposed.isalpha()
+
     def setup_ui(self):
         # Create a main frame
         main_frame = ttk.Frame(self.root, padding="10")
@@ -36,22 +44,25 @@ class WordelApp:
 
         # Create a grid of entry fields for the wordle game
         self.entries = []
+        # restrict input to one letter pass %P as the argument for the function validate letter
+        vcmd = (self.root.register(self.validate_letter), '%P')
         for i in range(6):
             row_entries = []
             for j in range(5):
-                # create entries that support readonly background
-                entry = Entry(main_frame, width=3, readonlybackground='white')
+                # create entries that support readonly background and validate input
+                entry = Entry(
+                    main_frame,
+                    width=3,
+                    readonlybackground='white',
+                    validate='key',
+                    validatecommand=vcmd
+                )
                 entry.grid(row=i+1, column=j, padx=1, pady=1)
                 row_entries.append(entry)
             self.entries.append(row_entries)
 
-        # Status label for feedback
-        # show first letter hint 
-        self.status_label = ttk.Label(main_frame, text=f"The word starts with {self.target_word[0].upper()}", font=("Arial", 12))
-        self.status_label.grid(row=8, column=0, columnspan=5, pady=(10, 0))
-
         #Score label 
-        self.score_label = ttk.Label(main_frame, text=str(self.score), font=("Arial", 12))
+        self.score_label = ttk.Label(main_frame, text="Score: " + str(self.score), font=("Arial", 12))
         self.score_label.grid(row=9, column=0, columnspan=5, pady=(5, 0))
 
         # Reset button to start a new game
@@ -61,6 +72,10 @@ class WordelApp:
         # Create a button to submit the guess.
         submit_button = ttk.Button(main_frame, text="Submit Guess", command=self.submit_guess)
         submit_button.grid(row=7, column=0, columnspan=5, pady=(20, 0))
+
+        # Label for status messages (warnings, success, invalid word, etc.)
+        self.status_label = ttk.Label(main_frame, text="", font=("Arial", 12))
+        self.status_label.grid(row=8, column=0, columnspan=5, pady=(5, 0))
 
         # set focus to first cell at the start of the game
         self.entries[0][0].focus_set()
@@ -73,7 +88,9 @@ class WordelApp:
 
         # Update the score label and clear the status label.
         self.score_label.config(text=f"Score: {self.score}")
-        self.status_label.config(text=f"The word starts with {self.target_word[0].upper()}")
+        # clear the status label if it exists
+        if hasattr(self, 'status_label'):
+            self.status_label.config(text="")
 
         for row in self.entries:
             # reset each entry to normal state, clear the text, and set background to white
@@ -92,7 +109,7 @@ class WordelApp:
             self.status_label.config(text="Please type one letter in each box.")
             return
         
-        # formats guess by turning array input into a string (lowercased for comparison)
+        # formats guess by turning array input into a string 
         guess = ''.join(l.lower() for l in letters)
 
         # clear 
@@ -147,9 +164,9 @@ class WordelApp:
     
     # autmotically has class as an argument so i can save the list of 5 letter words inside the class to use accross all methods
     @classmethod
-    def load_words_for_letter(cls, letter: str):
+    def load_words_for_letter(self, letter):
         #Return all normalized 5-letter words from the CSV for the given initial letter.
-        csv_dir = cls._get_csv_dir()
+        csv_dir = self._get_csv_dir()
         csv_path = os.path.join(csv_dir, f"{letter.upper()}word.csv")
         words = []
         if os.path.isfile(csv_path):
@@ -164,20 +181,20 @@ class WordelApp:
         return words
     # loads all the words from letters A-Z, neededs to be class method since it call load words for letter method
     @classmethod
-    def load_all_words(cls):
+    def load_all_words(self):
         #Aggregate 5-letter words from all letter files into one list.
         alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
         all_words = []
         for ch in alphabet:
-            all_words.extend(cls.load_words_for_letter(ch))
+            all_words.extend(self.load_words_for_letter(ch))
         return all_words
     # uses the two previous methods to get a random letter and then a random word
     @classmethod
-    def generate_target_word(cls):
+    def generate_target_word(self):
         #Choose a random target word from one randomly selected letter bucket.
         alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
         letter = random.choice(alphabet)
-        words = cls.load_words_for_letter(letter)
+        words = self.load_words_for_letter(letter)
         return random.choice(words), words
 
 
