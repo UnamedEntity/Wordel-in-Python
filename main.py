@@ -69,7 +69,7 @@ class WordelApp:
         reset_button = ttk.Button(main_frame, text="Reset Game", command=self.reset_game)
         reset_button.grid(row=9, column=0, columnspan=5, pady=(10, 0))
 
-        # Create a button to submit the guess.
+        #  a button to submit the guess.
         submit_button = ttk.Button(main_frame, text="Submit Guess", command=self.submit_guess)
         submit_button.grid(row=7, column=0, columnspan=5, pady=(10, 0))
 
