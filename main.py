@@ -9,7 +9,7 @@ class WordelApp:
     def __init__(self, root, current_row, score=0):
         # Initialize the main application window and set up the user interface.
         self.root = root
-        self.root.title("Wordel")
+        self.root.title("Wordle")
         # let the window size itself to content and prevent resizing
         self.root.resizable(False, False)
         # store game state
