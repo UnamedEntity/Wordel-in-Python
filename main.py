@@ -35,11 +35,11 @@ class WordelApp:
 
     def setup_ui(self):
         # Create a main frame
-        main_frame = ttk.Frame(self.root, padding="10")
+        main_frame = ttk.Frame(self.root, padding="80")
         main_frame.grid(row=0, column=0, sticky=(N, W, E, S))
 
         # Create a label for the title
-        title_label = ttk.Label(main_frame, text="Wordel", font=("Arial", 24))
+        title_label = ttk.Label(main_frame, text="Wordel", font=("Arial", 30))
         title_label.grid(row=0, column=0, columnspan=5, pady=(0, 20))
 
         # Create a grid of entry fields for the wordle game
@@ -62,20 +62,20 @@ class WordelApp:
             self.entries.append(row_entries)
 
         #Score label 
-        self.score_label = ttk.Label(main_frame, text="Score: " + str(self.score), font=("Arial", 12))
-        self.score_label.grid(row=9, column=0, columnspan=5, pady=(5, 0))
+        self.score_label = ttk.Label(main_frame, text="Score: " + str(self.score), font=("Arial", 15))
+        self.score_label.grid(row=10, column=0, columnspan=5, pady=(5, 0))
 
         # Reset button to start a new game
         reset_button = ttk.Button(main_frame, text="Reset Game", command=self.reset_game)
-        reset_button.grid(row=10, column=0, columnspan=5, pady=(10, 0))
+        reset_button.grid(row=9, column=0, columnspan=5, pady=(10, 0))
 
         # Create a button to submit the guess.
         submit_button = ttk.Button(main_frame, text="Submit Guess", command=self.submit_guess)
-        submit_button.grid(row=7, column=0, columnspan=5, pady=(20, 0))
+        submit_button.grid(row=7, column=0, columnspan=5, pady=(10, 0))
 
         # Label for status messages (warnings, success, invalid word, etc.)
         self.status_label = ttk.Label(main_frame, text="", font=("Arial", 12))
-        self.status_label.grid(row=8, column=0, columnspan=5, pady=(5, 0))
+        self.status_label.grid(row=8, column=0, columnspan=5, pady=(10, 0))
 
         # set focus to first cell at the start of the game
         self.entries[0][0].focus_set()
