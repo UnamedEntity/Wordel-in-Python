@@ -63,7 +63,7 @@ class WordelApp:
 
         #Score label 
         self.score_label = ttk.Label(main_frame, text="Score: " + str(self.score), font=("Arial", 15))
-        self.score_label.grid(row=10, column=0, columnspan=5, pady=(5, 0))
+        self.score_label.grid(row=10, column=0, columnspan=5, pady=(10, 0))
 
         # Reset button to start a new game
         reset_button = ttk.Button(main_frame, text="Reset Game", command=self.reset_game)
