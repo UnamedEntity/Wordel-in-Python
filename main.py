@@ -39,7 +39,7 @@ class WordelApp:
         main_frame.grid(row=0, column=0, sticky=(N, W, E, S))
 
         # Create a label for the title
-        title_label = ttk.Label(main_frame, text="Wordel", font=("Arial", 30))
+        title_label = ttk.Label(main_frame, text="Wordle", font=("Arial", 30))
         title_label.grid(row=0, column=0, columnspan=5, pady=(0, 20))
 
         # Create a grid of entry fields for the wordle game
