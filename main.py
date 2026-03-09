@@ -73,7 +73,7 @@ class WordelApp:
         submit_button = ttk.Button(main_frame, text="Submit Guess", command=self.submit_guess)
         submit_button.grid(row=7, column=0, columnspan=5, pady=(10, 0))
 
-        # Label for status messages (warnings, success, invalid word, etc.)
+        # Label for status messages 
         self.status_label = ttk.Label(main_frame, text="", font=("Arial", 12))
         self.status_label.grid(row=8, column=0, columnspan=5, pady=(10, 0))
 
