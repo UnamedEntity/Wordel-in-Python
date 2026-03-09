@@ -1,3 +1,8 @@
+# Christian Edwards
+# A simple Wordle game implemented in Python using Tkinter Library for the GUI.
+# Date: 2026-03-09
+
+
 from tkinter import *
 from tkinter import ttk
 import random
@@ -66,7 +71,7 @@ class WordelApp:
         self.score_label.grid(row=10, column=0, columnspan=5, pady=(10, 0))
 
         # Reset button to start a new game
-        reset_button = ttk.Button(main_frame, text="Reset Game", command=self.reset_game)
+        reset_button = ttk.Button(main_frame, text="Play Again", command=self.reset_game)
         reset_button.grid(row=9, column=0, columnspan=5, pady=(10, 0))
 
         #  a button to submit the guess.
