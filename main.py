@@ -20,6 +20,9 @@ class WordelApp:
         # store game state
         self.current_row = current_row
         self.score = score
+        #timer 
+        self.seconds = 0
+        self.timer_job = None
 
         # load the master dictionary of all 5-letter words from every CSV
         self.full_words = self.load_all_words()
@@ -29,6 +32,14 @@ class WordelApp:
 
         # build the interface
         self.setup_ui()
+
+    def update_timer(self):
+        minutes = self.seconds // 60
+        secs = self.seconds % 60
+        self.timer.config(text=f"Timer: {minutes:02d}:{secs:02d}")
+
+        self.seconds += 1
+        self.timer_job = self.root.after(1000, self.update_timer)
 
     # only let user input one letter per box and only allow letters, not numbers or symbols
     def validate_letter(self, proposed):
@@ -74,6 +85,13 @@ class WordelApp:
         reset_button = ttk.Button(main_frame, text="Play Again", command=self.reset_game)
         reset_button.grid(row=9, column=0, columnspan=5, pady=(10, 0))
 
+        # Timer
+        self.timer = ttk.Label(main_frame, text="Timer: 00:00", font=("Arial", 15))
+        self.timer.grid(row=11, column=0, columnspan=5, pady=(10, 0))
+
+        #increment timer every second using after method, and format the time as minutes and seconds
+        self.update_timer()
+
         #  a button to submit the guess.
         submit_button = ttk.Button(main_frame, text="Submit Guess", command=self.submit_guess)
         submit_button.grid(row=7, column=0, columnspan=5, pady=(10, 0))
@@ -86,24 +104,20 @@ class WordelApp:
         self.entries[0][0].focus_set()
 
     def reset_game(self):
-        # Reset the game state and clear the interface for a new game.
+        # stop previous timer loop
+        if self.timer_job is not None:
+            self.root.after_cancel(self.timer_job)
+
         self.current_row = 0
         self.target_word, self.words = self.generate_target_word()
         self.score = 0
 
-        # Update the score label and clear the status label.
         self.score_label.config(text=f"Score: {self.score}")
-        # clear the status label if it exists
-        if hasattr(self, 'status_label'):
-            self.status_label.config(text="")
 
-        for row in self.entries:
-            # reset each entry to normal state, clear the text, and set background to white
-            for entry in row:
-                entry.config(state='normal', background='white', readonlybackground='white')
-                entry.delete(0, END)
-        #set cursor to first cell of the first row
-        self.entries[0][0].focus_set()
+        # reset timer 
+        self.seconds = 0
+        self.timer.config(text="Timer: 00:00")
+        self.update_timer()
 
     def submit_guess(self):
         # Collect the guess from entry field and test it against the target word.
