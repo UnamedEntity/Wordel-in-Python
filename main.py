@@ -1,6 +1,6 @@
 # Christian Edwards
 # A simple Wordle game implemented in Python using Tkinter Library for the GUI.
-# Date: 2026-03-09
+# Date: 2026-03-23
 
 
 from tkinter import *
