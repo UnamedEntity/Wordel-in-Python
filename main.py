@@ -145,6 +145,8 @@ class WordelApp:
             self.score_label.config(text=f"Score: {self.score}")
             color = 'green'
             self.reset_game()
+            if self.timer_job:
+                self.root.after_cancel(self.timer_job)
         else:
             # Update the background color based on the guess.
             for i in range(len(self.target_word)):
@@ -164,6 +166,8 @@ class WordelApp:
             if self.current_row >= 6:
                 # print the answer and end the game if the user has used all their guesses
                 self.status_label.config(text=f"The word was: {self.target_word}")
+                if self.timer_job:
+                    self.root.after_cancel(self.timer_job)
             else:
                 # set cursor to next row's first cell
                 self.entries[self.current_row][0].focus_set()
