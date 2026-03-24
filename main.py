@@ -98,7 +98,7 @@ class WordelApp:
 
         # Label for status messages 
         self.status_label = ttk.Label(main_frame, text="", font=("Arial", 12))
-        self.status_label.grid(row=8, column=0, columnspan=5, pady=(10, 0))
+        self.status_label.grid(row=8, column=0, columnspan=5, pady=(5, 0))
 
         # set focus to first cell at the start of the game
         self.entries[0][0].focus_set()
