@@ -249,21 +249,9 @@ class WordelApp:
         else:
             # Update the background color based on the guess with animation
             self.animate_row_colors(self.current_row, guess, is_win=False)
-            # make the row read-only to prevent editing 
-            for entry in self.entries[self.current_row]:
-                entry.config(state='readonly')
-            self.current_row += 1
-            if self.current_row >= 6:
-                # print the answer and end the game if the user has used all their guesses
-                self.status_label.config(text=f"The word was: {self.target_word}", foreground="#E74C3C")
-                if self.timer_job:
-                    self.root.after_cancel(self.timer_job)
-            else:
-                # set cursor to next row's first cell
-                self.entries[self.current_row][0].focus_set()
 
     def animate_row_colors(self, row, guess, is_win=False):
-        """Animate the color reveal for a row of letters"""
+        # Animate the color reveal for a row of letters
         colors = []
         for i in range(len(self.target_word)):
             if guess[i] == self.target_word[i]:
