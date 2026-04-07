@@ -8,6 +8,7 @@ from tkinter import ttk
 import random
 import csv
 import os
+import time
 
 # Create the main application window class with helper functions to manage the GUI.
 class WordelApp:
@@ -23,6 +24,8 @@ class WordelApp:
         #timer 
         self.seconds = 0
         self.timer_job = None
+        # game start time for scoring
+        self.start_time = time.time()
 
         # load the master dictionary of all 5-letter words from every CSV
         self.full_words = self.load_all_words()
@@ -66,22 +69,22 @@ class WordelApp:
             pass  # Ignore if focus is not on an entry
 
     def setup_ui(self):
-        # Create a main frame with better styling
+        # Create a main frame 
         main_frame = ttk.Frame(self.root, padding="20")
         main_frame.grid(row=0, column=0, sticky=(N, W, E, S))
 
-        # Create a label for the title with better styling
+        # Create a label for the title 
         title_label = ttk.Label(main_frame, text="Wordle", font=("Helvetica", 36, "bold"), foreground="#2E3440")
         title_label.grid(row=0, column=0, columnspan=5, pady=(0, 30))
 
-        # Create a grid of entry fields for the wordle game with improved styling
+        # Create a grid of entry fields for the wordle game 
         self.entries = []
         # restrict input to one letter pass %P as the argument for the function validate letter
         vcmd = (self.root.register(self.validate_letter), '%P')
         for i in range(6):
             row_entries = []
             for j in range(5):
-                # create entries with enhanced styling
+                # create entries 
                 entry = Entry(
                     main_frame,
                     width=4,
@@ -106,7 +109,7 @@ class WordelApp:
             for entry in self.entries[i]:
                 entry.config(state='readonly')
 
-        # Score label with better styling
+        # Score label 
         self.score_label = ttk.Label(main_frame, text="Score: " + str(self.score), font=("Helvetica", 16), foreground="#2E3440")
         self.score_label.grid(row=10, column=0, columnspan=5, pady=(20, 0))
 
@@ -186,7 +189,8 @@ class WordelApp:
 
         self.current_row = 0
         self.target_word, self.words = self.generate_target_word()
-        self.score = 0
+        # Reset start time for new round 
+        self.start_time = time.time()
 
         self.score_label.config(text=f"Score: {self.score}")
 
@@ -237,10 +241,22 @@ class WordelApp:
             self.status_label.config(text="Not a valid word. Try again.")
 
         elif guess == self.target_word:
-            #increase score and update status and score labels
-            self.status_label.config(text="You've guessed the word!", foreground="#27AE60")
-            self.score += 1
+            # Calculate time-based score
+            end_time = time.time()
+            time_taken = end_time - self.start_time
+            guesses_used = self.current_row + 1
+            
+            # Score calculation: base 1000 points, minus time penalty and guess penalty
+            time_penalty = int(time_taken * 2)  # 2 points per second
+            guess_penalty = (guesses_used - 1) * 50  # 50 points penalty for each guess beyond the first
+            
+            round_score = max(1000 - time_penalty - guess_penalty, 100)
+            self.score += round_score
+            
+            # update status with score breakdown
+            self.status_label.config(text=f"Correct! Score: +{round_score} ({guesses_used} guesses, {int(time_taken)}s)", foreground="#27AE60")
             self.score_label.config(text=f"Score: {self.score}")
+            
             # Animate the winning row with a delay
             self.animate_row_colors(self.current_row, guess, is_win=True)
             self.root.after(1500, self.reset_game)  # Delay reset to show the win
