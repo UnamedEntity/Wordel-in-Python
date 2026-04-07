@@ -66,7 +66,7 @@ class WordelApp:
                     current_focus.delete(0, END)
                     current_focus.insert(0, current_text.upper())
         except:
-            pass  # Ignore if focus is not on an entry
+            pass  # ignore if focus is not on an entry
 
     def setup_ui(self):
         # Create a main frame 
