@@ -101,26 +101,31 @@ class WordelApp:
                 row_entries.append(entry)
             self.entries.append(row_entries)
 
+        # Make all rows after the current row readonly initially
+        for i in range(self.current_row + 1, 6):
+            for entry in self.entries[i]:
+                entry.config(state='readonly')
+
         # Score label with better styling
         self.score_label = ttk.Label(main_frame, text="Score: " + str(self.score), font=("Helvetica", 16), foreground="#2E3440")
         self.score_label.grid(row=10, column=0, columnspan=5, pady=(20, 0))
 
-        # Reset button with improved styling
+        # Reset button 
         reset_button = ttk.Button(main_frame, text="Play Again", command=self.reset_game, style="Accent.TButton")
         reset_button.grid(row=9, column=0, columnspan=5, pady=(15, 0))
 
-        # Timer with better styling
+        # Timer with better 
         self.timer = ttk.Label(main_frame, text="Timer: 00:00", font=("Helvetica", 16), foreground="#2E3440")
         self.timer.grid(row=11, column=0, columnspan=5, pady=(10, 0))
 
         # increment timer every second using after method, and format the time as minutes and seconds
         self.update_timer()
 
-        # Submit button with improved styling
+        # Submit button 
         submit_button = ttk.Button(main_frame, text="Submit Guess", command=self.submit_guess, style="Accent.TButton")
         submit_button.grid(row=7, column=0, columnspan=5, pady=(15, 0))
 
-        # Label for status messages with better styling
+        # status messagesg
         self.status_label = ttk.Label(main_frame, text="", font=("Helvetica", 14), foreground="#E74C3C")
         self.status_label.grid(row=8, column=0, columnspan=5, pady=(5, 0))
 
@@ -145,7 +150,7 @@ class WordelApp:
         self.entries[0][0].focus_set()
 
     def move_cursor(self, dx, dy):
-        """Move cursor between entry cells"""
+        # move between cells using arrow keys, but only if the next cell is not readonly
         try:
             current_focus = self.root.focus_get()
             if isinstance(current_focus, Entry):
@@ -196,6 +201,11 @@ class WordelApp:
                 )
                 entry.delete(0, END)  # Clear the text
 
+        # Make all rows after the first one readonly again
+        for i in range(1, 6):
+            for entry in self.entries[i]:
+                entry.config(state='readonly')
+
         # reset timer 
         self.seconds = 0
         self.timer.config(text="Timer: 00:00")
@@ -211,8 +221,8 @@ class WordelApp:
         # Collect the guess from entry field and test it against the target word.
         letters = [entry.get().strip() for entry in self.entries[self.current_row]]
 
-        # check if each box has exactly one character
-        if any(len(l) != 1 for l in letters):
+        # check if each box has exactly one character and is not empty
+        if any(len(l) != 1 or l == '' for l in letters):
             self.status_label.config(text="Please type one letter in each box.")
             return
         
@@ -257,23 +267,22 @@ class WordelApp:
         colors = []
         for i in range(len(self.target_word)):
             if guess[i] == self.target_word[i]:
-                colors.append('#27AE60')  # Green for correct position
+                colors.append('#27AE60')  # green for correct position
             elif guess[i] in self.target_word:
-                colors.append('#F39C12')  # Orange for correct letter wrong position
+                colors.append('#F39C12')  # orange for correct letter wrong position
             else:
-                colors.append('#BDC3C7')  # Gray for incorrect letter
+                colors.append('#BDC3C7')  # gray for incorrect letter
         
-        # Animate each letter with a delay
+        # animate each letter with a delay
         for i, color in enumerate(colors):
             self.root.after(i * 200, lambda idx=i, col=color: self.reveal_letter(row, idx, col))
         
-        # Make row readonly after animation completes
+        # make row readonly after animation completes
         self.root.after(len(colors) * 200 + 100, lambda: self.make_row_readonly(row, is_win))
 
     def reveal_letter(self, row, col, color):
-        """Reveal a single letter with color and animation effect"""
+        # Reveal a single letter with color and animation effect
         entry = self.entries[row][col]
-        # Add a subtle scale effect by changing border temporarily
         entry.config(highlightthickness=3, highlightcolor=color)
         self.root.after(100, lambda: entry.config(
             background=color, 
@@ -283,7 +292,7 @@ class WordelApp:
         ))
 
     def make_row_readonly(self, row, is_win):
-        """Make a row readonly after animation"""
+        # Make a row readonly after animation
         for entry in self.entries[row]:
             entry.config(state='readonly')
         
@@ -295,6 +304,9 @@ class WordelApp:
                 if self.timer_job:
                     self.root.after_cancel(self.timer_job)
             else:
+                # Enable the next row for editing
+                for entry in self.entries[self.current_row]:
+                    entry.config(state='normal')
                 # Move to next row
                 self.entries[self.current_row][0].focus_set()
     # dose not need class as an argument
