@@ -1,7 +1,14 @@
 # Christian Edwards
 # A simple Wordle game implemented in Python using Tkinter Library for the GUI.
 # Date: 2026-03-23
-
+"""
+Use arrow keys to navigate between cells, and backspace to clear the current cell,
+enter to submit your guess. The game will provide feedback on your guess with colors:
+- Green: Correct letter in the correct position 
+- Orange: Correct letter in the wrong position
+- Gray: Incorrect letter
+The score is calculated based on the number of guesses and the time taken to solve the wordle.
+"""
 
 from tkinter import *
 from tkinter import ttk
