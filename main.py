@@ -117,7 +117,7 @@ class WordelApp:
         reset_button = ttk.Button(main_frame, text="Play Again", command=self.reset_game, style="Accent.TButton")
         reset_button.grid(row=9, column=0, columnspan=5, pady=(15, 0))
 
-        # Timer with better 
+        # Timer 
         self.timer = ttk.Label(main_frame, text="Timer: 00:00", font=("Helvetica", 16), foreground="#2E3440")
         self.timer.grid(row=11, column=0, columnspan=5, pady=(10, 0))
 
