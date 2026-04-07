@@ -41,67 +41,138 @@ class WordelApp:
         self.seconds += 1
         self.timer_job = self.root.after(1000, self.update_timer)
 
-    # only let user input one letter per box and only allow letters, not numbers or symbols
     def validate_letter(self, proposed):
         if proposed == "":
             return True
         if len(proposed) > 1:
             return False
-        return proposed.isalpha()
+        # Convert to uppercase for better display
+        if proposed.isalpha():
+            # Schedule the conversion after validation
+            self.root.after(1, lambda: self.convert_to_uppercase())
+            return True
+        return False
+
+    def convert_to_uppercase(self):
+        #Convert the current entry's text to uppercase
+        try:
+            current_focus = self.root.focus_get()
+            if isinstance(current_focus, Entry):
+                current_text = current_focus.get()
+                if current_text and current_text.isalpha():
+                    current_focus.delete(0, END)
+                    current_focus.insert(0, current_text.upper())
+        except:
+            pass  # Ignore if focus is not on an entry
 
     def setup_ui(self):
-        # Create a main frame
-        main_frame = ttk.Frame(self.root, padding="80")
+        # Create a main frame with better styling
+        main_frame = ttk.Frame(self.root, padding="20")
         main_frame.grid(row=0, column=0, sticky=(N, W, E, S))
 
-        # Create a label for the title
-        title_label = ttk.Label(main_frame, text="Wordle", font=("Arial", 30))
-        title_label.grid(row=0, column=0, columnspan=5, pady=(0, 20))
+        # Create a label for the title with better styling
+        title_label = ttk.Label(main_frame, text="Wordle", font=("Helvetica", 36, "bold"), foreground="#2E3440")
+        title_label.grid(row=0, column=0, columnspan=5, pady=(0, 30))
 
-        # Create a grid of entry fields for the wordle game
+        # Create a grid of entry fields for the wordle game with improved styling
         self.entries = []
         # restrict input to one letter pass %P as the argument for the function validate letter
         vcmd = (self.root.register(self.validate_letter), '%P')
         for i in range(6):
             row_entries = []
             for j in range(5):
-                # create entries that support readonly background and validate input
+                # create entries with enhanced styling
                 entry = Entry(
                     main_frame,
-                    width=3,
-                    readonlybackground='white',
+                    width=4,
+                    font=("Helvetica", 24, "bold"),
+                    justify='center',
+                    relief='solid',
+                    borderwidth=2,
+                    readonlybackground='#FFFFFF',
+                    background='#FFFFFF',
+                    highlightbackground='#D3D3D3',
+                    highlightcolor='#4A90E2',
+                    highlightthickness=1,
                     validate='key',
                     validatecommand=vcmd
                 )
-                entry.grid(row=i+1, column=j, padx=1, pady=1)
+                entry.grid(row=i+1, column=j, padx=3, pady=3, ipadx=5, ipady=5)
                 row_entries.append(entry)
             self.entries.append(row_entries)
 
-        #Score label 
-        self.score_label = ttk.Label(main_frame, text="Score: " + str(self.score), font=("Arial", 15))
-        self.score_label.grid(row=10, column=0, columnspan=5, pady=(10, 0))
+        # Score label with better styling
+        self.score_label = ttk.Label(main_frame, text="Score: " + str(self.score), font=("Helvetica", 16), foreground="#2E3440")
+        self.score_label.grid(row=10, column=0, columnspan=5, pady=(20, 0))
 
-        # Reset button to start a new game
-        reset_button = ttk.Button(main_frame, text="Play Again", command=self.reset_game)
-        reset_button.grid(row=9, column=0, columnspan=5, pady=(10, 0))
+        # Reset button with improved styling
+        reset_button = ttk.Button(main_frame, text="Play Again", command=self.reset_game, style="Accent.TButton")
+        reset_button.grid(row=9, column=0, columnspan=5, pady=(15, 0))
 
-        # Timer
-        self.timer = ttk.Label(main_frame, text="Timer: 00:00", font=("Arial", 15))
+        # Timer with better styling
+        self.timer = ttk.Label(main_frame, text="Timer: 00:00", font=("Helvetica", 16), foreground="#2E3440")
         self.timer.grid(row=11, column=0, columnspan=5, pady=(10, 0))
 
-        #increment timer every second using after method, and format the time as minutes and seconds
+        # increment timer every second using after method, and format the time as minutes and seconds
         self.update_timer()
 
-        #  a button to submit the guess.
-        submit_button = ttk.Button(main_frame, text="Submit Guess", command=self.submit_guess)
-        submit_button.grid(row=7, column=0, columnspan=5, pady=(10, 0))
+        # Submit button with improved styling
+        submit_button = ttk.Button(main_frame, text="Submit Guess", command=self.submit_guess, style="Accent.TButton")
+        submit_button.grid(row=7, column=0, columnspan=5, pady=(15, 0))
 
-        # Label for status messages 
-        self.status_label = ttk.Label(main_frame, text="", font=("Arial", 12))
+        # Label for status messages with better styling
+        self.status_label = ttk.Label(main_frame, text="", font=("Helvetica", 14), foreground="#E74C3C")
         self.status_label.grid(row=8, column=0, columnspan=5, pady=(5, 0))
+
+        # Configure button style
+        style = ttk.Style()
+        style.configure("Accent.TButton", font=("Helvetica", 12, "bold"), padding=6)
+
+        # Set window background color
+        self.root.configure(bg='#F8F9FA')
+
+        # Bind Enter key to submit guess
+        self.root.bind('<Return>', lambda e: self.submit_guess())
+        
+        # Bind arrow keys and backspace for navigation
+        self.root.bind('<Left>', lambda e: self.move_cursor(-1, 0))
+        self.root.bind('<Right>', lambda e: self.move_cursor(1, 0))
+        self.root.bind('<Up>', lambda e: self.move_cursor(0, -1))
+        self.root.bind('<Down>', lambda e: self.move_cursor(0, 1))
+        self.root.bind('<BackSpace>', lambda e: self.handle_backspace())
 
         # set focus to first cell at the start of the game
         self.entries[0][0].focus_set()
+
+    def move_cursor(self, dx, dy):
+        """Move cursor between entry cells"""
+        try:
+            current_focus = self.root.focus_get()
+            if isinstance(current_focus, Entry):
+                for row_idx, row in enumerate(self.entries):
+                    for col_idx, entry in enumerate(row):
+                        if entry == current_focus:
+                            new_row = row_idx + dy
+                            new_col = col_idx + dx
+                            if 0 <= new_row < len(self.entries) and 0 <= new_col < len(row):
+                                if self.entries[new_row][new_col]['state'] != 'readonly':
+                                    self.entries[new_row][new_col].focus_set()
+                            return
+        except:
+            pass
+
+    def handle_backspace(self):
+        # handle backspace key for clearing current cell and moving left
+        try:
+            current_focus = self.root.focus_get()
+            if isinstance(current_focus, Entry):
+                current_text = current_focus.get()
+                if current_text:  # If there's text, clear it
+                    current_focus.delete(0, END)
+                else:  # If empty, move to previous cell
+                    self.move_cursor(-1, 0)
+        except:
+            pass
 
     def reset_game(self):
         # stop previous timer loop
@@ -114,10 +185,27 @@ class WordelApp:
 
         self.score_label.config(text=f"Score: {self.score}")
 
+        # Reset all entry colors and states
+        for row in self.entries:
+            for entry in row:
+                entry.config(
+                    background='#FFFFFF',
+                    readonlybackground='#FFFFFF',
+                    state='normal',
+                    highlightthickness=1
+                )
+                entry.delete(0, END)  # Clear the text
+
         # reset timer 
         self.seconds = 0
         self.timer.config(text="Timer: 00:00")
         self.update_timer()
+
+        # Clear status message
+        self.status_label.config(text="", foreground="#E74C3C")
+
+        # Set focus to first cell
+        self.entries[0][0].focus_set()
 
     def submit_guess(self):
         # Collect the guess from entry field and test it against the target word.
@@ -140,36 +228,74 @@ class WordelApp:
 
         elif guess == self.target_word:
             #increase score and update status and score labels
-            self.status_label.config(text="You've guessed the word!")
+            self.status_label.config(text="You've guessed the word!", foreground="#27AE60")
             self.score += 1
             self.score_label.config(text=f"Score: {self.score}")
-            color = 'green'
-            self.reset_game()
+            # Animate the winning row with a delay
+            self.animate_row_colors(self.current_row, guess, is_win=True)
+            self.root.after(1500, self.reset_game)  # Delay reset to show the win
             if self.timer_job:
                 self.root.after_cancel(self.timer_job)
         else:
-            # Update the background color based on the guess.
-            for i in range(len(self.target_word)):
-                # choose a color
-                if guess[i] == self.target_word[i]:
-                    color = 'green'
-                elif guess[i] in self.target_word:
-                    color = 'yellow'
-                else:
-                    color = 'red'
-                # set both normal and readonly backgrounds 
-                self.entries[self.current_row][i].config(background=color, readonlybackground=color)
+            # Update the background color based on the guess with animation
+            self.animate_row_colors(self.current_row, guess, is_win=False)
             # make the row read-only to prevent editing 
             for entry in self.entries[self.current_row]:
                 entry.config(state='readonly')
             self.current_row += 1
             if self.current_row >= 6:
                 # print the answer and end the game if the user has used all their guesses
-                self.status_label.config(text=f"The word was: {self.target_word}")
+                self.status_label.config(text=f"The word was: {self.target_word}", foreground="#E74C3C")
                 if self.timer_job:
                     self.root.after_cancel(self.timer_job)
             else:
                 # set cursor to next row's first cell
+                self.entries[self.current_row][0].focus_set()
+
+    def animate_row_colors(self, row, guess, is_win=False):
+        """Animate the color reveal for a row of letters"""
+        colors = []
+        for i in range(len(self.target_word)):
+            if guess[i] == self.target_word[i]:
+                colors.append('#27AE60')  # Green for correct position
+            elif guess[i] in self.target_word:
+                colors.append('#F39C12')  # Orange for correct letter wrong position
+            else:
+                colors.append('#BDC3C7')  # Gray for incorrect letter
+        
+        # Animate each letter with a delay
+        for i, color in enumerate(colors):
+            self.root.after(i * 200, lambda idx=i, col=color: self.reveal_letter(row, idx, col))
+        
+        # Make row readonly after animation completes
+        self.root.after(len(colors) * 200 + 100, lambda: self.make_row_readonly(row, is_win))
+
+    def reveal_letter(self, row, col, color):
+        """Reveal a single letter with color and animation effect"""
+        entry = self.entries[row][col]
+        # Add a subtle scale effect by changing border temporarily
+        entry.config(highlightthickness=3, highlightcolor=color)
+        self.root.after(100, lambda: entry.config(
+            background=color, 
+            readonlybackground=color,
+            highlightthickness=1,
+            highlightcolor='#4A90E2'
+        ))
+
+    def make_row_readonly(self, row, is_win):
+        """Make a row readonly after animation"""
+        for entry in self.entries[row]:
+            entry.config(state='readonly')
+        
+        if not is_win:
+            self.current_row += 1
+            if self.current_row >= 6:
+                # Game over - show the answer
+                self.status_label.config(text=f"The word was: {self.target_word}", foreground="#E74C3C")
+                if self.timer_job:
+                    self.root.after_cancel(self.timer_job)
+            else:
+                # Move to next row
                 self.entries[self.current_row][0].focus_set()
     # dose not need class as an argument
     @staticmethod
