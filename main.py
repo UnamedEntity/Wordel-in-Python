@@ -327,12 +327,13 @@ class WordelApp:
         # The word lists directory can sit next to this script or one level up.
         base_dir = os.path.dirname(os.path.abspath(__file__))
         candidates = [
-            # look for a folder named exactly as it appears in the repository
             os.path.normpath(os.path.join(base_dir, 'Word lists in csv')),
+            os.path.normpath(os.path.join(base_dir, '..', 'Word lists in csv')),
         ]
         for c in candidates:
             if os.path.isdir(c):
                 return c
+        raise FileNotFoundError(f"Word list directory not found. Checked: {candidates}")
     
     # autmotically has class as an argument so i can save the list of 5 letter words inside the class to use accross all methods
     def load_words_for_letter(self, letter):
@@ -341,14 +342,15 @@ class WordelApp:
         csv_path = os.path.join(csv_dir, f"{letter.upper()}word.csv")
         words = []
         if os.path.isfile(csv_path):
-            with open(csv_path, 'r', newline='') as f:
+            with open(csv_path, 'r', newline='', encoding='utf-8', errors='replace') as f:
                 reader = csv.reader(f)
                 for row in reader:
                     if not row:
                         continue
-                    w = row[0].strip().lower()
-                    if len(w) == 5:
-                        words.append(w)
+                    for cell in row:
+                        w = cell.strip().lower()
+                        if len(w) == 5 and w.isalpha():
+                            words.append(w)
         return words
     # loads all the words from letters A-Z, neededs to be class method since it call load words for letter method
     def load_all_words(self):
@@ -361,8 +363,10 @@ class WordelApp:
     # uses the two previous methods to get a random letter and then a random word
     def generate_target_word(self):
         #Choose a random target word from one randomly selected letter bucket.
-        alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-        letter = random.choice(alphabet)
+        available_letters = [ch for ch in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' if self.load_words_for_letter(ch)]
+        if not available_letters:
+            raise ValueError('No valid word lists were found.')
+        letter = random.choice(available_letters)
         words = self.load_words_for_letter(letter)
         return random.choice(words), words
 
