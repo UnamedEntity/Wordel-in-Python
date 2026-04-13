@@ -136,7 +136,7 @@ class WordelApp:
         submit_button.grid(row=7, column=0, columnspan=5, pady=(15, 0))
 
         # status messagesg
-        self.status_label = ttk.Label(main_frame, text="", font=("Helvetica", 14), foreground="#E74C3C")
+        self.status_label = ttk.Label(main_frame, text=f"Starts with {self.target_word[0]}", font=("Helvetica", 14), foreground="#E74C3C")
         self.status_label.grid(row=8, column=0, columnspan=5, pady=(5, 0))
 
         # Configure button style
